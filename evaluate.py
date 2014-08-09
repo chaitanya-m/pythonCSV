@@ -2,6 +2,7 @@ import csv, sys, re
 from decimal import Decimal
 
 inputData=[]
+outputData=[]
 
 def main():
     getInputData()
@@ -19,18 +20,23 @@ def getInputData():
 
 
 def processSpreadsheet():
-    global inputData
+    global inputData, outputData
 
     print "\nData stored was:"
     for row in inputData:
         print row
 
-    print "\nValues evaluate to:"
     for row in inputData:
+        outputRow=[]
         for cellValue in row:
             cell = evaluateCell(cellValue)
             print cell
-            
+            outputRow.append(str(cell))
+        outputData.append(outputRow)
+
+    print "\nValues evaluate to:"
+    for row in outputData:
+        print ', '.join(row)
 
 def evaluateCell(cellValue):
 
@@ -49,7 +55,8 @@ def evaluateCell(cellValue):
         return operator(*args)
 
                                         # Not in our list of valid expressions
-    return "ERR"
+    return "#ERR"
+
 
 
 def add(augend, addend):
@@ -77,18 +84,8 @@ def getValue(*args):
     else:                               #if it's a cell address, return the value # Assumption: for now, we assume it is known, we don't deal with dependencies 
         letterIndex = ord(args[0]) - ord('a')
         numberIndex = int(args[1])-1
-
-        print "---------"        
-        print letterIndex
-        print "+++++++++"
         return inputData[letterIndex][numberIndex]
-#    elif m.match(operand):              
-            #print 'zzzzz %d' %(ord(m.groups(1)) - ord('a'))
-#            result = m.match(operand)
-#            print result.group(1)
-#        else:
-#            return '#ERR: Invalid operand'
-                                        #We should never get here if the getValue regex and regexes in this function are correct.
+
 
 validExpressions={}
 validExpressions[re.compile('^(\d+) (\d+) \+$')] = add
