@@ -34,13 +34,13 @@ def processSpreadsheet():
 
 def evaluateCell(cellValue):
 
-    # Assumption: we expect there not to be more than one match- that would be an invalid cellValue
-    # Find if the cellValue corresponds to an expression, extract expression-operator pair
+                                        # Assumption: we expect there not to be more than one match- that would be an invalid cellValue
+                                        # Find if the cellValue corresponds to an expression, extract expression-operator pair
     match = (
         (expression.match(cellValue), operator) for expression, operator in validExpressions.iteritems()
     )
 
-    # Extract groups. 
+                                        # Extract groups. 
     match = (
         (args.groups(), operator) for args, operator in match if args is not None
     )
@@ -48,7 +48,7 @@ def evaluateCell(cellValue):
     for args, operator in match:
         return operator(*args)
 
-    # Not in our list of valid expressions
+                                        # Not in our list of valid expressions
     return "ERR"
 
 
@@ -70,11 +70,32 @@ def divide(dividend, divisor):
 def emptyToZero():
     return Decimal(0)
 
-def getValue(operand):
-    if re.match(r'(\d+)', operand):
-        return Decimal(operand)
+    '''
+    def getValue(operand):
+        m = re.compile('^([a-z]?)(\d+)$')     # Optimise- this regex shouldn't be repeated
+        if re.match(r'^(\d+)$', operand):   #if it's a number, just return it
+            return Decimal(operand)
+        elif m.match(operand):              #if it's a cell address, return the value # Assumption: for now, we assume it is known, we don't deal with dependencies 
+            #print 'zzzzz %d' %(ord(m.groups(1)) - ord('a'))
+            result = m.match(operand)
+            print result.group(1)
+        else:
+            return '#ERR: Invalid operand'
+                                        #We should never get here if the getValue regex and regexes in this function are correct.
+    '''
+def getValue(*args):
+    if args[0] == '':
+        return Decimal(args[1])
     else:
-        return 'Cell Designator'
+        print "---------"
+        print ord(args[0]) - ord('a')
+#    elif m.match(operand):              #if it's a cell address, return the value # Assumption: for now, we assume it is known, we don't deal with dependencies 
+            #print 'zzzzz %d' %(ord(m.groups(1)) - ord('a'))
+#            result = m.match(operand)
+#            print result.group(1)
+#        else:
+#            return '#ERR: Invalid operand'
+                                        #We should never get here if the getValue regex and regexes in this function are correct.
 
 validExpressions={}
 validExpressions[re.compile('^(\d+) (\d+) \+$')] = add
@@ -82,17 +103,18 @@ validExpressions[re.compile('^(\d+) (\d+) \-$')] = subtract
 validExpressions[re.compile('^(\d+) (\d+) \*$')] = multiply
 validExpressions[re.compile('^(\d+) (\d+) \/$')] = divide
 validExpressions[re.compile('^$')] = emptyToZero
-validExpressions[re.compile('^([a-z]?\d+)$')] = getValue
+validExpressions[re.compile('^([a-z]?)(\d+)$')] = getValue
 
 
 
-# Assumption: empty cells should be assigned a value of zero
-# Assumption: cell range is [a-z][\d+]
+
+                                        # Assumption: empty cells should be assigned a value of zero
+                                        # Assumption: cell range is [a-z][\d+]
 
 if __name__ == '__main__':
     main()
-#Apparently this is a Pythonic idiom- StackOverflow.
-#Code in functions is compiled to bytecode.
-#This means local variables are stored in fixed-size arrays, not dictionaries.
-#This makes lookups faster!
+                                        #Apparently this is a Pythonic idiom- StackOverflow.
+                                        #Code in functions is compiled to bytecode.
+                                        #This means local variables are stored in fixed-size arrays, not dictionaries.  
+                                        #This makes lookups faster!
 
