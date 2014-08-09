@@ -35,18 +35,18 @@ def processSpreadsheet():
 def evaluateCell(cellValue):
 
     # Assumption: we expect there not to be more than one match- that would be an invalid cellValue
-    # Find if the cellValue corresponds to an expression, extract expression-operand pair
+    # Find if the cellValue corresponds to an expression, extract expression-operator pair
     match = (
-        (expression.match(cellValue), operand) for expression, operand in validExpressions.iteritems()
+        (expression.match(cellValue), operator) for expression, operator in validExpressions.iteritems()
     )
 
     # Extract groups. 
     match = (
-        (args.groups(), operand) for args, operand in match if args is not None
+        (args.groups(), operator) for args, operator in match if args is not None
     )
 
-    for args, operand in match:
-        return operand(*args)
+    for args, operator in match:
+        return operator(*args)
 
     # Not in our list of valid expressions
     return "ERR"
@@ -61,24 +61,33 @@ def multiply(multiplicand, multiplier):
 def subtract(minuend, subtrahend):
     return Decimal(minuend) - Decimal(subtrahend)
 
-def zero():
-    return Decimal(0)
-
 def divide(dividend, divisor):
     if Decimal(divisor) == 0:
         return "#ERR-Division by zero"
     else:
         return Decimal(dividend) / Decimal(divisor)
 
+def emptyToZero():
+    return Decimal(0)
+
+def getValue(operand):
+    if re.match(r'(\d+)', operand):
+        return Decimal(operand)
+    else:
+        return 'Cell Designator'
 
 validExpressions={}
-validExpressions[re.compile('(\d+) (\d+) \+')] = add
-validExpressions[re.compile('(\d+) (\d+) \-')] = subtract
-validExpressions[re.compile('(\d+) (\d+) \*')] = multiply
-validExpressions[re.compile('(\d+) (\d+) \/')] = divide
-validExpressions[re.compile('^$')] = zero
+validExpressions[re.compile('^(\d+) (\d+) \+$')] = add
+validExpressions[re.compile('^(\d+) (\d+) \-$')] = subtract
+validExpressions[re.compile('^(\d+) (\d+) \*$')] = multiply
+validExpressions[re.compile('^(\d+) (\d+) \/$')] = divide
+validExpressions[re.compile('^$')] = emptyToZero
+validExpressions[re.compile('^([a-z]?\d+)$')] = getValue
 
-#Assumption: cell range is [a-z][\d+]
+
+
+# Assumption: empty cells should be assigned a value of zero
+# Assumption: cell range is [a-z][\d+]
 
 if __name__ == '__main__':
     main()
