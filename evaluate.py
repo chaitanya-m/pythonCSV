@@ -1,3 +1,12 @@
+#Assumption: There are no circular dependencies that indefinitely prevent evaluation of an expression.
+# e.g. b2 = b1, b1 = b2.
+#So we shall assume that every cell will evaluate to an expression, given sufficient iterations
+#What might be a more efficient way of solving this? We have a system of equations that could be of any order...
+#consider the case where a1 = b1 b1 b1 b1 b1 b1 * + * * * , i.e.  (b1^2 + b1 ) * b1^3
+#For now I shall implement a brute force approach wherein I iteratively evaluate the matrix until all values are 
+#either constants or #ERRs. A better and more complete solution would lie in building a dependency graph, 
+#checking that there are no circular dependencies, then evaluating upwards from the leaves.
+
 import csv, sys, re
 from decimal import Decimal
 
@@ -37,6 +46,7 @@ def processSpreadsheet():
     print "\nValues evaluate to:"
     for row in outputData:
         print ', '.join(row)
+
 
 def evaluateCell(cellValue):
 
