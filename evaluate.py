@@ -6,10 +6,15 @@ inputData=[]
 #validExpressions={}
 #validExpressions[
 addition = re.compile('(\d+) (\d+) \+')
+multiplication = re.compile('(\d+) (\d+) \*')
+subtraction = re.compile('(\d+) (\d+) \-')
+division = re.compile('(\d+) (\d+) \/')
+
 
 def main():
     getInputData()
     processSpreadsheet()    
+
 
 def getInputData():
     with open(sys.argv[1], 'rb') as csvfile:
@@ -19,6 +24,7 @@ def getInputData():
         for row in dataReader:
             inputData.append(row)
             print ', '.join(row)            
+
 
 def processSpreadsheet():
     global inputData
@@ -32,6 +38,7 @@ def processSpreadsheet():
         for cell in row:
             cellValue = evaluateExpression(cell)
             print cellValue
+            
 
 def evaluateExpression(expression):
 
@@ -39,8 +46,34 @@ def evaluateExpression(expression):
     if match is not None:
         return add( Decimal(match.group(1)), Decimal(match.group(2)) )
 
-def add(summand1, summand2):
-    return summand1 + summand2
+    match = multiplication.match(expression)
+    if match is not None:
+        return multiply( Decimal(match.group(1)), Decimal(match.group(2)) )
+
+    match = subtraction.match(expression)
+    if match is not None:
+        return subtract( Decimal(match.group(1)), Decimal(match.group(2)) )
+
+    match = division.match(expression)
+    if match is not None:
+        return divide( Decimal(match.group(1)), Decimal(match.group(2)) )
+
+
+
+def add(augend, addend):
+    return augend + addend
+
+def multiply(multiplicand, multiplier):
+    return multiplicand * multiplier
+
+def subtract(minuend, subtrahend):
+    return minuend - subtrahend
+
+def divide(dividend, divisor):
+    if divisor == 0:
+        return "#ERR-Division by zero"
+    else:
+        return dividend / divisor
 
 
 if __name__ == '__main__':
