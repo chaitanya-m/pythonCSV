@@ -12,6 +12,7 @@ from decimal import Decimal
 
 inputData=[]
 outputData=[]
+expressionsEvaluated = False
 
 def main():
     getInputData()
@@ -29,19 +30,23 @@ def getInputData():
 
 
 def processSpreadsheet():
-    global inputData, outputData
+    global inputData, outputData, expressionsEvaluated
 
     print "\nData stored was:"
     for row in inputData:
         print row
 
-    for row in inputData:
-        outputRow=[]
-        for cellValue in row:
-            cell = evaluateCell(cellValue)
-            print cell
-            outputRow.append(str(cell))
-        outputData.append(outputRow)
+    while expressionsEvaluated == False:
+        expressionsEvaluated = True
+        outputData=[]
+        for row in inputData:
+            outputRow=[]
+            for cellValue in row:
+                cell = evaluateCell(cellValue)
+                print cell
+                outputRow.append(str(cell))
+            outputData.append(outputRow)
+        inputData = outputData
 
     print "\nValues evaluate to:"
     for row in outputData:
@@ -49,7 +54,6 @@ def processSpreadsheet():
 
 
 def evaluateCell(cellValue):
-
                                         # Assumption: we expect there not to be more than one match- that would be an invalid cellValue
                                         # Find if the cellValue corresponds to an expression, extract expression-operator pair
     match = (
@@ -68,7 +72,7 @@ def evaluateCell(cellValue):
     return "#ERR"
 
 
-
+#These operators can be abstracted away for more elegant code. 
 def add(*args):
     augend = args[1]                    # For readability, though inefficient. args[0] and args[2] are the cell letter prefixes.
     addend = args[3]
@@ -109,7 +113,10 @@ def getValue(*args):
         return Decimal(0)
     elif args[0] == '':
         return Decimal(args[1])
-    else:                               #if it's a cell address, return the value # Assumption: for now, we assume it is known, we don't deal with dependencies 
+    else:
+                             #if it's a cell address, return the value # Assumption: for now, we assume it is known, we don't deal with dependencies
+        global expressionsEvaluated
+        expressionsEvaluated = False
         letterIndex = ord(args[0]) - ord('a')
         numberIndex = int(args[1])-1
         print "letterIndex %d numberIndex %d" %(letterIndex, numberIndex)
@@ -124,7 +131,6 @@ validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \-$')] = subtract
 validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \*$')] = multiply
 validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \/$')] = divide
 validExpressions[re.compile('^([a-z]?)(\d*)$')] = getValue
-
 
 
                                         # Assumption: empty cells should be assigned a value of zero
