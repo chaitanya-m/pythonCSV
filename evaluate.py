@@ -74,18 +74,24 @@ def add(*args):
     addend = args[3]
     if args[0] == '' and args[2] == '':
         return Decimal(augend) + Decimal(addend)
-
-def multiply(*args):
-    multiplicand = args[1]                   
-    multiplier = args[3]
-    if args[0] == '' and args[2] == '':
-        return Decimal(multiplicand) * Decimal(multiplier)
+    else:
+        return str(getValue(args[0], args[1])) + ' ' + str(getValue(args[2], args[3])) + ' +'
 
 def subtract(*args):
     minuend = args[1]
     subtrahend = args[3]
     if args[0] == '' and args[2] == '':
         return Decimal(minuend) - Decimal(subtrahend)
+    else:
+        return str(getValue(args[0], args[1])) + ' ' + str(getValue(args[2], args[3])) + ' -'
+
+def multiply(*args):
+    multiplicand = args[1]                   
+    multiplier = args[3]
+    if args[0] == '' and args[2] == '':
+        return Decimal(multiplicand) * Decimal(multiplier)
+    else:
+        return str(getValue(args[0], args[1])) + ' ' + str(getValue(args[2], args[3])) + ' *'
 
 def divide(*args):
     dividend = args[1]
@@ -95,18 +101,21 @@ def divide(*args):
             return "#ERR-Division by zero"
         else:
             return Decimal(dividend) / Decimal(divisor)
-
-def emptyToZero():
-    return Decimal(0)
+    else:
+        return str(getValue(args[0], args[1])) + ' ' + str(getValue(args[2], args[3])) + ' /'
 
 def getValue(*args):
-
-    if args[0] == '':
+    if args[0] == '' and args [1] == '':  
+        return Decimal(0)
+    elif args[0] == '':
         return Decimal(args[1])
     else:                               #if it's a cell address, return the value # Assumption: for now, we assume it is known, we don't deal with dependencies 
         letterIndex = ord(args[0]) - ord('a')
         numberIndex = int(args[1])-1
-        return inputData[letterIndex][numberIndex]
+        print "letterIndex %d numberIndex %d" %(letterIndex, numberIndex)
+        if inputData[numberIndex][letterIndex] == '':
+            return 0              
+        return inputData[numberIndex][letterIndex]              # rows, columns
 
 
 validExpressions={}
@@ -114,9 +123,7 @@ validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \+$')] = add
 validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \-$')] = subtract
 validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \*$')] = multiply
 validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \/$')] = divide
-validExpressions[re.compile('^$')] = emptyToZero
-validExpressions[re.compile('^([a-z]?)(\d+)$')] = getValue
-
+validExpressions[re.compile('^([a-z]?)(\d*)$')] = getValue
 
 
 
