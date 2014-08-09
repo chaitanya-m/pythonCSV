@@ -1,6 +1,6 @@
 #Assumption: There are no circular dependencies that indefinitely prevent evaluation of an expression.
 # e.g. b2 = b1, b1 = b2.
-#So we shall assume that every cell will evaluate to an expression, given sufficient iterations
+#So we shall assume that every cell will evaluate to a constant expression, given sufficient iterations
 #What might be a more efficient way of solving this? We have a system of equations that could be of any order...
 #consider the case where a1 = b1 b1 b1 b1 b1 b1 * + * * * , i.e.  (b1^2 + b1 ) * b1^3
 #For now I shall implement a brute force approach wherein I iteratively evaluate the matrix until all values are 
@@ -69,20 +69,32 @@ def evaluateCell(cellValue):
 
 
 
-def add(augend, addend):
-    return Decimal(augend) + Decimal(addend)
+def add(*args):
+    augend = args[1]                    # For readability, though inefficient. args[0] and args[2] are the cell letter prefixes.
+    addend = args[3]
+    if args[0] == '' and args[2] == '':
+        return Decimal(augend) + Decimal(addend)
 
-def multiply(multiplicand, multiplier):
-    return Decimal(multiplicand) * Decimal(multiplier)
+def multiply(*args):
+    multiplicand = args[1]                   
+    multiplier = args[3]
+    if args[0] == '' and args[2] == '':
+        return Decimal(multiplicand) * Decimal(multiplier)
 
-def subtract(minuend, subtrahend):
-    return Decimal(minuend) - Decimal(subtrahend)
+def subtract(*args):
+    minuend = args[1]
+    subtrahend = args[3]
+    if args[0] == '' and args[2] == '':
+        return Decimal(minuend) - Decimal(subtrahend)
 
-def divide(dividend, divisor):
-    if Decimal(divisor) == 0:
-        return "#ERR-Division by zero"
-    else:
-        return Decimal(dividend) / Decimal(divisor)
+def divide(*args):
+    dividend = args[1]
+    divisor = args[3]
+    if args[0] == '' and args[2] == '':
+        if Decimal(divisor) == 0:
+            return "#ERR-Division by zero"
+        else:
+            return Decimal(dividend) / Decimal(divisor)
 
 def emptyToZero():
     return Decimal(0)
@@ -98,10 +110,10 @@ def getValue(*args):
 
 
 validExpressions={}
-validExpressions[re.compile('^(\d+) (\d+) \+$')] = add
-validExpressions[re.compile('^(\d+) (\d+) \-$')] = subtract
-validExpressions[re.compile('^(\d+) (\d+) \*$')] = multiply
-validExpressions[re.compile('^(\d+) (\d+) \/$')] = divide
+validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \+$')] = add
+validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \-$')] = subtract
+validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \*$')] = multiply
+validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \/$')] = divide
 validExpressions[re.compile('^$')] = emptyToZero
 validExpressions[re.compile('^([a-z]?)(\d+)$')] = getValue
 
