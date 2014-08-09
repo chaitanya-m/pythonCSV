@@ -76,9 +76,9 @@ validExpressions[re.compile('(\d+) (\d+) \+')] = add
 validExpressions[re.compile('(\d+) (\d+) \-')] = subtract
 validExpressions[re.compile('(\d+) (\d+) \*')] = multiply
 validExpressions[re.compile('(\d+) (\d+) \/')] = divide
-validExpressions[re.compile('')] = zero
+validExpressions[re.compile('^$')] = zero
 
-
+#Assumption: cell range is [a-z][\d+]
 
 if __name__ == '__main__':
     main()
