@@ -42,8 +42,8 @@ def processSpreadsheet():
         for row in inputData:
             outputRow=[]
             for cellValue in row:
+                print cellValue
                 cell = evaluateCell(cellValue)
-                print cell
                 outputRow.append(str(cell))
             outputData.append(outputRow)
         inputData = outputData
@@ -119,11 +119,14 @@ def getValue(*args):
         expressionsEvaluated = False
         letterIndex = ord(args[0]) - ord('a')
         numberIndex = int(args[1])-1
-        print "letterIndex %d numberIndex %d" %(letterIndex, numberIndex)
         if inputData[numberIndex][letterIndex] == '':
             return 0              
         return inputData[numberIndex][letterIndex]              # rows, columns
 
+def postFixStackSolve(*args):
+    print "====================================="
+    print args[0]
+    print "====================================="
 
 validExpressions={}
 validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \+$')] = add
@@ -131,7 +134,27 @@ validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \-$')] = subtract
 validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \*$')] = multiply
 validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \/$')] = divide
 validExpressions[re.compile('^([a-z]?)(\d*)$')] = getValue
+validExpressions[re.compile('(^.+(([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/] )+.*$)|(^.*(([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/] )+.+$)')] = postFixStackSolve
 
+#validExpressions[re.compile('^(([a-z]?)(\d+))+ [\+|\-|\*|\/]* (([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/])+ (([a-z]?)(\d+))* [\+|\-|\*|\/]*$')] = postFixStackSolve
+#validExpressions[re.compile('^((([a-z]?)(\d+))+ [\+ |\- |\* |\/ ]*)+(([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/]+)+ ((([a-z]?)(\d+) )*[\+ |\- |\* |\/ ]*)*$')] = postFixStackSolve
+
+#[\+|\-|\*|\/]+
+
+#^((([a-z]?)(\d+))+ [\+|\-|\*|\/]* (([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/]+)+)
+
+#.*$|^((([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/]+)+ (([a-z]?)(\d+))+ [\+|\-|\*|\/]*.*)$')] = postFixStackSolve
+
+
+#(([a-z]?)(\d+))+ [\+|\-|\*|\/]* 
+#(([a-z]?)(\d+))* [\+|\-|\*|\/]*$')] 
+
+# This regex expects the first token to be a valid atomic expression.
+# The next token can be a valid atomic expression or an operator
+# At least one sequence of two valid atomic expressions and one operator must exist for the postfix to be valid and reduce to a binary postfix primitive
+# Finally, we may have any number of atomic expressions and operators... the expression might be found to be invalid at some point in the evaluation process
+# It also shouldn't match simple binary expressions- that is left to the other functions. This implies atleast one more atomic expression, either before or after it. 
+# (Just an extra operator is obviously invalid).
 
                                         # Assumption: empty cells should be assigned a value of zero
                                         # Assumption: cell range is [a-z][\d+]
