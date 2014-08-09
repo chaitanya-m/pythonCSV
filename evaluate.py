@@ -40,7 +40,6 @@ def evaluateCell(cellValue):
         (expression.match(cellValue), operand) for expression, operand in validExpressions.iteritems()
     )
 
-
     # Extract groups. 
     match = (
         (args.groups(), operand) for args, operand in match if args is not None
@@ -62,6 +61,9 @@ def multiply(multiplicand, multiplier):
 def subtract(minuend, subtrahend):
     return Decimal(minuend) - Decimal(subtrahend)
 
+def zero():
+    return Decimal(0)
+
 def divide(dividend, divisor):
     if Decimal(divisor) == 0:
         return "#ERR-Division by zero"
@@ -74,7 +76,7 @@ validExpressions[re.compile('(\d+) (\d+) \+')] = add
 validExpressions[re.compile('(\d+) (\d+) \-')] = subtract
 validExpressions[re.compile('(\d+) (\d+) \*')] = multiply
 validExpressions[re.compile('(\d+) (\d+) \/')] = divide
-
+validExpressions[re.compile('')] = zero
 
 
 
