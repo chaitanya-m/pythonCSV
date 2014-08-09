@@ -3,14 +3,6 @@ from decimal import Decimal
 
 inputData=[]
 
-#validExpressions={}
-#validExpressions[
-addition = re.compile('(\d+) (\d+) \+')
-multiplication = re.compile('(\d+) (\d+) \*')
-subtraction = re.compile('(\d+) (\d+) \-')
-division = re.compile('(\d+) (\d+) \/')
-
-
 def main():
     getInputData()
     processSpreadsheet()    
@@ -35,45 +27,55 @@ def processSpreadsheet():
 
     print "\nValues evaluate to:"
     for row in inputData:
-        for cell in row:
-            cellValue = evaluateExpression(cell)
-            print cellValue
+        for cellValue in row:
+            cell = evaluateCell(cellValue)
+            print cell
             
 
-def evaluateExpression(expression):
+def evaluateCell(cellValue):
 
-    match = addition.match(expression)
-    if match is not None:
-        return add( Decimal(match.group(1)), Decimal(match.group(2)) )
+    # Assumption: we expect there not to be more than one match- that would be an invalid cellValue
+    # Find if the cellValue corresponds to an expression, extract expression-operand pair
+    match = (
+        (expression.match(cellValue), operand) for expression, operand in validExpressions.iteritems()
+    )
 
-    match = multiplication.match(expression)
-    if match is not None:
-        return multiply( Decimal(match.group(1)), Decimal(match.group(2)) )
 
-    match = subtraction.match(expression)
-    if match is not None:
-        return subtract( Decimal(match.group(1)), Decimal(match.group(2)) )
+    # Extract groups. 
+    match = (
+        (args.groups(), operand) for args, operand in match if args is not None
+    )
 
-    match = division.match(expression)
-    if match is not None:
-        return divide( Decimal(match.group(1)), Decimal(match.group(2)) )
+    for args, operand in match:
+        return operand(*args)
 
+    # Not in our list of valid expressions
+    return "ERR"
 
 
 def add(augend, addend):
-    return augend + addend
+    return Decimal(augend) + Decimal(addend)
 
 def multiply(multiplicand, multiplier):
-    return multiplicand * multiplier
+    return Decimal(multiplicand) * Decimal(multiplier)
 
 def subtract(minuend, subtrahend):
-    return minuend - subtrahend
+    return Decimal(minuend) - Decimal(subtrahend)
 
 def divide(dividend, divisor):
-    if divisor == 0:
+    if Decimal(divisor) == 0:
         return "#ERR-Division by zero"
     else:
-        return dividend / divisor
+        return Decimal(dividend) / Decimal(divisor)
+
+
+validExpressions={}
+validExpressions[re.compile('(\d+) (\d+) \+')] = add
+validExpressions[re.compile('(\d+) (\d+) \-')] = subtract
+validExpressions[re.compile('(\d+) (\d+) \*')] = multiply
+validExpressions[re.compile('(\d+) (\d+) \/')] = divide
+
+
 
 
 if __name__ == '__main__':
