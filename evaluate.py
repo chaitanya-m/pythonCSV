@@ -125,7 +125,7 @@ def getValue(*args):
 
 def postFixStackSolve(*args):
     print "====================================="
-    print args[0]
+    print args
     print "====================================="
 
 validExpressions={}
@@ -134,7 +134,12 @@ validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \-$')] = subtract
 validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \*$')] = multiply
 validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \/$')] = divide
 validExpressions[re.compile('^([a-z]?)(\d*)$')] = getValue
-validExpressions[re.compile('(^.+(([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/] )+.*$)|(^.*(([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/] )+.+$)')] = postFixStackSolve
+validExpressions[re.compile('(^.+(([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/])+.*$)|(^.*(([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/])+.+$)')] = postFixStackSolve
+#To keep the regex simple, we simply test for the presence of a binary postfix sub-expression with any tokens that precede or succeed it.
+#If the tokens are invalid, we will reach a state with either an invalid binary expression or no match to any of our operators
+#The token that must precede or succeed cannot be a whitespace... that would eventually lead to #ERR.
+#We will evaluate our first match using the evaluateCell method (name must be changed)
+
 
 #validExpressions[re.compile('^(([a-z]?)(\d+))+ [\+|\-|\*|\/]* (([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/])+ (([a-z]?)(\d+))* [\+|\-|\*|\/]*$')] = postFixStackSolve
 #validExpressions[re.compile('^((([a-z]?)(\d+))+ [\+ |\- |\* |\/ ]*)+(([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/]+)+ ((([a-z]?)(\d+) )*[\+ |\- |\* |\/ ]*)*$')] = postFixStackSolve
@@ -144,7 +149,6 @@ validExpressions[re.compile('(^.+(([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/] )+.*
 #^((([a-z]?)(\d+))+ [\+|\-|\*|\/]* (([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/]+)+)
 
 #.*$|^((([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/]+)+ (([a-z]?)(\d+))+ [\+|\-|\*|\/]*.*)$')] = postFixStackSolve
-
 
 #(([a-z]?)(\d+))+ [\+|\-|\*|\/]* 
 #(([a-z]?)(\d+))* [\+|\-|\*|\/]*$')] 
