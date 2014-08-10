@@ -74,51 +74,55 @@ def evaluateCell(cellValue):
 
 #These operators can be abstracted away for more elegant code. 
 def binaryOperation(*args):
-    if args[4] == '+':
+
+    print "-------------"
+    print args[0]
+    print "-------------"
+    if args[5] == '+':
         return add(*args)
-    elif args[4] == '-':
+    elif args[5] == '-':
         return subtract(*args)
-    elif args[4] == '*':
+    elif args[5] == '*':
         return multiply(*args)
-    elif args[4] == '/':
+    elif args[5] == '/':
         return divide(*args)
     else:
         return "#ERR"
 
 def add(*args):
-    augend = args[1]                    # For readability, though inefficient. args[0] and args[2] are the cell letter prefixes.
-    addend = args[3]
-    if args[0] == '' and args[2] == '':
+    augend = args[2]                    # For readability, though inefficient. args[0] and args[2] are the cell letter prefixes.
+    addend = args[4]
+    if args[1] == '' and args[3] == '':
         return Decimal(augend) + Decimal(addend)
     else:
-        return str(getValue(args[0], args[1])) + ' ' + str(getValue(args[2], args[3])) + ' +'
+        return str(getValue(args[1], args[2])) + ' ' + str(getValue(args[3], args[4])) + ' +'
 
 def subtract(*args):
-    minuend = args[1]
-    subtrahend = args[3]
-    if args[0] == '' and args[2] == '':
+    minuend = args[2]
+    subtrahend = args[4]
+    if args[1] == '' and args[3] == '':
         return Decimal(minuend) - Decimal(subtrahend)
     else:
-        return str(getValue(args[0], args[1])) + ' ' + str(getValue(args[2], args[3])) + ' -'
+        return str(getValue(args[1], args[2])) + ' ' + str(getValue(args[3], args[4])) + ' -'
 
 def multiply(*args):
-    multiplicand = args[1]                   
-    multiplier = args[3]
-    if args[0] == '' and args[2] == '':
+    multiplicand = args[2]                   
+    multiplier = args[4]
+    if args[1] == '' and args[3] == '':
         return Decimal(multiplicand) * Decimal(multiplier)
     else:
-        return str(getValue(args[0], args[1])) + ' ' + str(getValue(args[2], args[3])) + ' *'
+        return str(getValue(args[1], args[2])) + ' ' + str(getValue(args[3], args[4])) + ' *'
 
 def divide(*args):
-    dividend = args[1]
-    divisor = args[3]
-    if args[0] == '' and args[2] == '':
+    dividend = args[2]
+    divisor = args[4]
+    if args[1] == '' and args[3] == '':
         if Decimal(divisor) == 0:
             return "#ERR-Division by zero"
         else:
             return Decimal(dividend) / Decimal(divisor)
     else:
-        return str(getValue(args[0], args[1])) + ' ' + str(getValue(args[2], args[3])) + ' /'
+        return str(getValue(args[1], args[2])) + ' ' + str(getValue(args[3], args[4])) + ' /'
 
 def getValue(*args):
     if args[0] == '' and args [1] == '':  
@@ -140,14 +144,28 @@ def postFixStackSolve(*args):
     #For now, we will re-search for the first binary subexpression in args[0] or args[6], whichever one is not None(upon matching the first one, the regex won't match again... mutual exclusion)
     print "====================================="
     if args[0] is not None:
-        return args[0]
+        binarySubexpression = binaryOperationRE.search(str(args[0]))
+        binaryArgs = binarySubexpression.groups()
+        print "====================================="
+        ret = re.sub(binaryOperationRE, str(binaryOperation(*binaryArgs)), str(args[0]))
+        return ret
+
+        #return binaryOperation(
+        #                        binarySubexpression.groups()[0],
+        #                        binarySubexpression.groups()[1],
+        #                        binarySubexpression.groups()[2],
+        #                        binarySubexpression.groups()[3],
+        #                        binarySubexpression.groups()[4],
+        #                        binarySubexpression.groups()[5],
+        #                        )
+        #return "#E"
+
     elif args[6] is not None:
         return args[6]
     else:
         return "#ERR"
-    print "====================================="
 
-binaryOperationRE = re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) ([\+|\-|\*|\/])$')
+binaryOperationRE = re.compile('(([a-z]?)(\d+) ([a-z]?)(\d+) ([\+|\-|\*|\/]))')
 validExpressions={}
 validExpressions[binaryOperationRE] = binaryOperation
 validExpressions[re.compile('^([a-z]?)(\d*)$')] = getValue
