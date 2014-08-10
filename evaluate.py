@@ -127,6 +127,8 @@ def getValue(*args):
     if args[0] == '' and args [1] == '':  
         return Decimal(0)
     elif args[0] == '':
+        print "---------->"
+        print args
         return Decimal(args[1])
     else:
                              #if it's a cell address, return the value # Assumption: for now, we assume it is known, we don't deal with dependencies
@@ -158,7 +160,7 @@ binaryOperationRE = re.compile('(([a-z]?)(\-*\d+) ([a-z]?)(\-*\d+) ([\+|\-|\*|\/
 binaryOperationREStrict = re.compile('^(([a-z]?)(\-*\d+) ([a-z]?)(\-*\d+) ([\+|\-|\*|\/]))$')
 validExpressions={}
 validExpressions[binaryOperationREStrict] = binaryOperation
-validExpressions[re.compile('^([a-z]?)(\-*\d*)$')] = getValue
+validExpressions[re.compile('^([a-z]?)(\-*\d*(\.\d+)?)$')] = getValue
 validExpressions[re.compile('(^.+( ([a-z]?)(\-*\d+) ([a-z]?)(\-*\d+) [\+|\-|\*|\/])+.*$)|(^.*(([a-z]?)(\-*\d+) ([a-z]?)(\-*\d+) [\+|\-|\*|\/])+ .+$)')] = postFixStackSolve
 #To keep the regex simple, we simply test for the presence of a binary postfix sub-expression with any tokens that precede or succeed it.
 #If the tokens are invalid, we will reach a state with either an invalid binary expression or no match to any of our operators
