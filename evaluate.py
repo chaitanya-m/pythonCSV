@@ -142,26 +142,18 @@ def getValue(*args):
 def postFixStackSolve(*args):
     #Our regex for this could be improved to save some computation here. At the moment, it finds the last binary operation... we need the first one.
     #For now, we will re-search for the first binary subexpression in args[0] or args[6], whichever one is not None(upon matching the first one, the regex won't match again... mutual exclusion)
-    print "====================================="
     if args[0] is not None:
         binarySubexpression = binaryOperationRE.search(str(args[0]))
         binaryArgs = binarySubexpression.groups()
-        print "====================================="
-        ret = re.sub(binaryOperationRE, str(binaryOperation(*binaryArgs)), str(args[0]))
-        return ret
-
-        #return binaryOperation(
-        #                        binarySubexpression.groups()[0],
-        #                        binarySubexpression.groups()[1],
-        #                        binarySubexpression.groups()[2],
-        #                        binarySubexpression.groups()[3],
-        #                        binarySubexpression.groups()[4],
-        #                        binarySubexpression.groups()[5],
-        #                        )
-        #return "#E"
+        evalVal = re.sub(binaryOperationRE, str(binaryOperation(*binaryArgs)), str(args[0]))
+        return evalVal
 
     elif args[6] is not None:
-        return args[6]
+        binarySubexpression = binaryOperationRE.search(str(args[6]))
+        binaryArgs = binarySubexpression.groups()
+        evalVal = re.sub(binaryOperationRE, str(binaryOperation(*binaryArgs)), str(args[6]))
+        return evalVal
+
     else:
         return "#ERR"
 
