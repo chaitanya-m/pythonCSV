@@ -155,8 +155,9 @@ def postFixStackSolve(*args):
         return "#ERR"
 
 binaryOperationRE = re.compile('(([a-z]?)(\-*\d+) ([a-z]?)(\-*\d+) ([\+|\-|\*|\/]))')
+binaryOperationREStrict = re.compile('^(([a-z]?)(\-*\d+) ([a-z]?)(\-*\d+) ([\+|\-|\*|\/]))$')
 validExpressions={}
-validExpressions[binaryOperationRE] = binaryOperation
+validExpressions[binaryOperationREStrict] = binaryOperation
 validExpressions[re.compile('^([a-z]?)(\-*\d*)$')] = getValue
 validExpressions[re.compile('(^.+( ([a-z]?)(\-*\d+) ([a-z]?)(\-*\d+) [\+|\-|\*|\/])+.*$)|(^.*(([a-z]?)(\-*\d+) ([a-z]?)(\-*\d+) [\+|\-|\*|\/])+ .+$)')] = postFixStackSolve
 #To keep the regex simple, we simply test for the presence of a binary postfix sub-expression with any tokens that precede or succeed it.
