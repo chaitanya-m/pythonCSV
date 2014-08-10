@@ -42,7 +42,9 @@ def processSpreadsheet():
         for row in inputData:
             outputRow=[]
             for cellValue in row:
-                print cellValue
+                if re.search(' [\+|\-|\*\|\/]', str(cellValue)) is not None:
+                    print cellValue
+                    expressionsEvaluated = False
                 cell = evaluateCell(cellValue)
                 outputRow.append(str(cell))
             outputData.append(outputRow)
@@ -75,9 +77,6 @@ def evaluateCell(cellValue):
 #These operators can be abstracted away for more elegant code. 
 def binaryOperation(*args):
 
-    print "-------------"
-    print args[0]
-    print "-------------"
     if args[5] == '+':
         return add(*args)
     elif args[5] == '-':
@@ -131,8 +130,6 @@ def getValue(*args):
         return Decimal(args[1])
     else:
                              #if it's a cell address, return the value # Assumption: for now, we assume it is known, we don't deal with dependencies
-        global expressionsEvaluated
-        expressionsEvaluated = False
         letterIndex = ord(args[0]) - ord('a')
         numberIndex = int(args[1])-1
         if inputData[numberIndex][letterIndex] == '':
