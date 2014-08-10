@@ -73,6 +73,18 @@ def evaluateCell(cellValue):
 
 
 #These operators can be abstracted away for more elegant code. 
+def binaryOperation(*args):
+    if args[4] == '+':
+        return add(*args)
+    elif args[4] == '-':
+        return subtract(*args)
+    elif args[4] == '*':
+        return multiply(*args)
+    elif args[4] == '/':
+        return divide(*args)
+    else:
+        return "#ERR"
+
 def add(*args):
     augend = args[1]                    # For readability, though inefficient. args[0] and args[2] are the cell letter prefixes.
     addend = args[3]
@@ -136,10 +148,7 @@ def postFixStackSolve(*args):
     print "====================================="
 
 validExpressions={}
-validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \+$')] = add
-validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \-$')] = subtract
-validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \*$')] = multiply
-validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) \/$')] = divide
+validExpressions[re.compile('^([a-z]?)(\d+) ([a-z]?)(\d+) ([\+|\-|\*|\/])$')] = binaryOperation
 validExpressions[re.compile('^([a-z]?)(\d*)$')] = getValue
 validExpressions[re.compile('(^.+( ([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/])+.*$)|(^.*(([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/])+ .+$)')] = postFixStackSolve
 #To keep the regex simple, we simply test for the presence of a binary postfix sub-expression with any tokens that precede or succeed it.
