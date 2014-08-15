@@ -1,0 +1,26 @@
+
+Problem Analysis:
+
+I broke down the problem into what I thought was elementary: 
+1. Evaluating a binary postfix expression, because every postfix expression reduces to one.
+2. Obtaining information from calles based on their letter-number representation
+3. Efficiency. What is the most efficient way to evaluate postfix expressions?
+
+Workflow:
+
+My aim was to get out an initial minimal viable solution, then redesign it Pythonically.
+I paid particular attention to abstraction- I tried to make the code readable without comments, 
+for it's structure to intuitively "make sense".
+
+I didn't use classes- I just wanted to write a procedural solution to begin with.
+
+Limitations:
+
+Inputs are expected to be integers. Intermediate floating-point values do not get processed.
+The post-fix evaluation algorithm is inefficient. It loops through the matrix until all expressions have been evaluated...
+A more thorough (though not more efficient in terms of algorithmic complexity) way would involve building a dependency graph for our cells.
+
+Postfix expressions can then be evaluated as a stack operation, cell-by-cell.
+
+Besides, loops can be tested for. The current implementation doesn't handle loops.
+
