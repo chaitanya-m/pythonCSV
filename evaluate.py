@@ -1,12 +1,3 @@
-#Assumption: There are no circular dependencies that indefinitely prevent evaluation of an expression.
-# e.g. b2 = b1, b1 = b2.
-#So we shall assume that every cell will evaluate to a constant expression, given sufficient iterations
-#What might be a more efficient way of solving this? We have a system of equations that could be of any order...
-#consider the case where a1 = b1 b1 b1 b1 b1 b1 * + * * * , i.e.  (b1^2 + b1 ) * b1^3
-#For now I shall implement a brute force approach wherein I iteratively evaluate the matrix until all values are 
-#either constants or #ERRs. A better and more complete solution would lie in building a dependency graph, 
-#checking that there are no circular dependencies, then evaluating upwards from the leaves.
-
 import csv, sys, re
 from decimal import Decimal
 
@@ -43,7 +34,6 @@ def processSpreadsheet():
             outputRow=[]
             for cellValue in row:
                 if re.search(' [\+|\-|\*\|\/]', str(cellValue)) is not None:
-                    print cellValue
                     expressionsEvaluated = False
                 cell = evaluateCell(cellValue)
                 outputRow.append(str(cell))
@@ -127,8 +117,6 @@ def getValue(*args):
     if args[0] == '' and args [1] == '':  
         return Decimal(0)
     elif args[0] == '':
-        print "---------->"
-        print args
         return Decimal(args[1])
     else:
                              #if it's a cell address, return the value # Assumption: for now, we assume it is known, we don't deal with dependencies
@@ -162,23 +150,37 @@ validExpressions={}
 validExpressions[binaryOperationREStrict] = binaryOperation
 validExpressions[re.compile('^([a-z]?)(\-*\d*(\.\d+)?)$')] = getValue
 validExpressions[re.compile('(^.+( ([a-z]?)(\-*\d+) ([a-z]?)(\-*\d+) [\+|\-|\*|\/])+.*$)|(^.*(([a-z]?)(\-*\d+) ([a-z]?)(\-*\d+) [\+|\-|\*|\/])+ .+$)')] = postFixStackSolve
+
+if __name__ == '__main__':
+    main()
+
+
+
+                                        #Apparently this is a Pythonic idiom- StackOverflow (main function explicitly called...).
+                                        #Code in functions is compiled to bytecode.
+                                        #This means local variables are stored in fixed-size arrays, not dictionaries.  
+                                        #This makes lookups faster!
+
+
+#Assumptions: 
+#There are no circular dependencies that indefinitely prevent evaluation of an expression.
+# e.g. b2 = b1, b1 = b2.
+#So we shall assume that every cell will evaluate to a constant expression, given sufficient iterations
+#What might be a more efficient way of solving this? We have a system of equations that could be of any order...
+#consider the case where a1 = b1 b1 b1 b1 b1 b1 * + * * * , i.e.  (b1^2 + b1 ) * b1^3
+#For now I shall implement a brute force approach wherein I iteratively evaluate the matrix until all values are 
+#either constants or #ERRs. A better and more complete solution would lie in building a dependency graph, 
+#checking that there are no circular dependencies, then evaluating upwards from the leaves.
+
+
+
+#Regexes:
+#validExpressions[re.compile('(^.+( ([a-z]?)(\-*\d+) ([a-z]?)(\-*\d+) [\+|\-|\*|\/])+.*$)|(^.*(([a-z]?)(\-*\d+) ([a-z]?)(\-*\d+) [\+|\-|\*|\/])+ .+$)')] = postFixStackSolve
+
 #To keep the regex simple, we simply test for the presence of a binary postfix sub-expression with any tokens that precede or succeed it.
 #If the tokens are invalid, we will reach a state with either an invalid binary expression or no match to any of our operators
 #The token that must precede or succeed cannot be a whitespace... that would eventually lead to #ERR.
 #We will evaluate our first match using the evaluateCell method (name must be changed)
-
-
-#validExpressions[re.compile('^(([a-z]?)(\d+))+ [\+|\-|\*|\/]* (([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/])+ (([a-z]?)(\d+))* [\+|\-|\*|\/]*$')] = postFixStackSolve
-#validExpressions[re.compile('^((([a-z]?)(\d+))+ [\+ |\- |\* |\/ ]*)+(([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/]+)+ ((([a-z]?)(\d+) )*[\+ |\- |\* |\/ ]*)*$')] = postFixStackSolve
-
-#[\+|\-|\*|\/]+
-
-#^((([a-z]?)(\d+))+ [\+|\-|\*|\/]* (([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/]+)+)
-
-#.*$|^((([a-z]?)(\d+) ([a-z]?)(\d+) [\+|\-|\*|\/]+)+ (([a-z]?)(\d+))+ [\+|\-|\*|\/]*.*)$')] = postFixStackSolve
-
-#(([a-z]?)(\d+))+ [\+|\-|\*|\/]* 
-#(([a-z]?)(\d+))* [\+|\-|\*|\/]*$')] 
 
 # This regex expects the first token to be a valid atomic expression.
 # The next token can be a valid atomic expression or an operator
@@ -189,11 +191,4 @@ validExpressions[re.compile('(^.+( ([a-z]?)(\-*\d+) ([a-z]?)(\-*\d+) [\+|\-|\*|\
 
                                         # Assumption: empty cells should be assigned a value of zero
                                         # Assumption: cell range is [a-z][\d+]
-
-if __name__ == '__main__':
-    main()
-                                        #Apparently this is a Pythonic idiom- StackOverflow.
-                                        #Code in functions is compiled to bytecode.
-                                        #This means local variables are stored in fixed-size arrays, not dictionaries.  
-                                        #This makes lookups faster!
 
